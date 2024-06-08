@@ -1,12 +1,14 @@
 import os
-from flask import Flask, request, jsonify, redirect, url_for, session, send_from_directory
 import psycopg2
+from flask import Flask, request, jsonify, redirect, url_for, session, send_from_directory
 from psycopg2 import sql
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('APP_SECRET') # Needed for session management
 
-def init_db():
+# Function to connect to the database
+def database_connect():
     try:
         # Read database credentials from environment variables
         dbname = os.environ.get('DB_NAME')
@@ -23,6 +25,15 @@ def init_db():
             host=host,
             port=port
         )
+        return conn
+    except Exception as error:
+        print(f"Error while connecting to the database: {error}")
+        return None
+
+def database_init():
+    try:
+        # Connect to PostgreSQL database
+        conn = database_connect()
         cursor = conn.cursor()
 
         # Create the expenses table
@@ -119,30 +130,101 @@ def get_unapproved_expenses():
 @app.route('/api/v1/expense/create', methods=['POST'])
 @token_required
 def create_expense():
-    data = request.json
-    name = data.get('name')
-    cost = data.get('cost')
-    # Create new expense
-    pass
+    try:
+        # Get variables
+        data = request.json
+        name = data.get('name')
+        cost = data.get('cost')
+        month = datetime.now().month
+
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'sucess': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to insert a record
+        query = "INSERT INTO expenses (name, cost, month) VALUES (%s, %s, %s)"
+        cursor.execute(query, (name, cost, month))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        return jsonify({'sucess': True, 'message': 'Record added successfully'}), 200
+    except Exception as error:
+        return jsonify({'sucess': False, 'message': f'Error adding record: {error}'}), 500
 
 @app.route('/api/v1/expense/update', methods=['PUT'])
 @token_required
 def update_expense():
-    data = request.json
-    expense_id = data.get('id')
-    name = data.get('name')
-    cost = data.get('cost')
-    # Update the expense
-    pass
+    try:
+        # Get variables
+        data = request.json
+        expense_id = data.get('id')
+        name = data.get('name')
+        cost = data.get('cost')
+        month = datetime.now().month
+
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'sucess': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to update a record
+        query = "UPDATE expenses SET name = %s, cost = %s, month = %s, WHERE id = %s"
+        cursor.execute(query, (name, cost, month, expense_id))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        return jsonify({'message': 'Record updated successfully'}), 200
+    except Exception as error:
+        return jsonify({'message': f'Error updating record: {error}'}), 500
 
 @app.route('/api/v1/expense/delete', methods=['DELETE'])
 @token_required
 def delete_expense():
-    data = request.json
-    expense_id = data.get('id')
-    # Delete the expense
-    pass
+    try:
+        # Get variables
+        data = request.json
+        expense_id = data.get('id')
+
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'sucess': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to insert a record
+        query = "DELETE FROM expenses WHERE id = %s"
+        cursor.execute(query, (expense_id,))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        return jsonify({'sucess': True, 'message': 'Record deleted successfully'}), 200
+    except Exception as error:
+        return jsonify({'sucess': False, 'message': f'Error deleting  record: {error}'}), 500
 
 if __name__ == '__main__':
-    init_db() # Ensure the database is initialized
+    database_init() # Ensure the database is initialized
     app.run(host='0.0.0.0', port=5000, debug=True)
