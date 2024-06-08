@@ -124,8 +124,32 @@ def client():
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
 @token_required
 def get_unapproved_expenses():
-    # Fetch and return unapproved expenses
-    pass
+    try:
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to fetch unapproved expenses
+        query = "SELECT * FROM expenses WHERE approved = false ORDER BY id"
+        cursor.execute(query)
+
+        # Fetch all rows
+        rows = cursor.fetchall()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        # Convert rows to list of dictionaries for JSON response
+        expenses = [{'id': row[0], 'name': row[1], 'cost': row[2], 'approved': row[3], 'month': row[4]} for row in rows]
+
+        return jsonify({'success': True, 'message': 'Here is the list of unapproved expenses.', 'expenses': expenses}), 200
+    except Exception as error:
+        return jsonify({'success': False, 'message': f'Error fetching unapproved expenses: {error}'}), 500
 
 @app.route('/api/v1/expense/create', methods=['POST'])
 @token_required
@@ -140,7 +164,7 @@ def create_expense():
         # Connect to the database
         conn = database_connect()
         if conn is None:
-            return jsonify({'sucess': False, 'message': 'Failed to connect to the database'}), 500
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
 
         # Create a cursor object
         cursor = conn.cursor()
@@ -156,9 +180,9 @@ def create_expense():
         cursor.close()
         conn.close()
 
-        return jsonify({'sucess': True, 'message': 'Record added successfully'}), 200
+        return jsonify({'success': True, 'message': 'Record added successfully'}), 200
     except Exception as error:
-        return jsonify({'sucess': False, 'message': f'Error adding record: {error}'}), 500
+        return jsonify({'success': False, 'message': f'Error adding record: {error}'}), 500
 
 @app.route('/api/v1/expense/update', methods=['PUT'])
 @token_required
@@ -174,7 +198,7 @@ def update_expense():
         # Connect to the database
         conn = database_connect()
         if conn is None:
-            return jsonify({'sucess': False, 'message': 'Failed to connect to the database'}), 500
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
 
         # Create a cursor object
         cursor = conn.cursor()
@@ -205,7 +229,7 @@ def delete_expense():
         # Connect to the database
         conn = database_connect()
         if conn is None:
-            return jsonify({'sucess': False, 'message': 'Failed to connect to the database'}), 500
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
 
         # Create a cursor object
         cursor = conn.cursor()
