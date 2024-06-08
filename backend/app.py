@@ -64,6 +64,18 @@ def token_required(f):
     decorated_function.__name__ = f.__name__
     return decorated_function
 
+@app.route('/')
+def index():
+    return redirect(url_for('login'))
+
+@app.route('/img/<path:filename>')
+def serve_img(filename):
+    return send_from_directory('/app/frontend/img', filename)
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    return send_from_directory('/app/frontend/js', filename)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -85,8 +97,7 @@ def login():
 @app.route('/client')
 @token_required
 def client():
-    # Serve your frontend code here
-    return "Welcome to the client area!"
+    return send_file('/app/frontend/client.html')
 
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
 @token_required
@@ -123,4 +134,4 @@ def delete_expense():
 
 if __name__ == '__main__':
     init_db() # Ensure the database is initialized
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
