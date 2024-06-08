@@ -1,0 +1,53 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <meta name="google" content="notranslate">
+        <title>Sharedspence</title>
+        <link href="https://cdn.jsdelivr.net/npm/beercss@3.5.6/dist/cdn/beer.min.css" rel="stylesheet">
+        <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.5.6/dist/cdn/beer.min.js"></script>
+        <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.0/dist/cdn/material-dynamic-colors.min.js"></script>
+        <script src="js/api.js"></script>
+    </head>
+    <body class="dark">
+        <div class="padding center-align">
+            <article class="no-padding round">
+                <img class="responsive small top-round" src="/img/beer-and-woman.svg">
+                <div class="padding">
+                    <h5>Welcome</h5>
+                    <div class="field label round border extra">
+                        <input type="text">
+                        <label>Username</label>
+                    </div>
+                    <div class="field label round border extra">
+                        <input type="password">
+                        <label>Password</label>
+                    </div>
+                    <nav>
+                        <button data-ui="#dialogProgress" class="responsive">Login</button>
+                    </nav>
+                </div>
+            </article>
+        </div>
+
+        <dialog id="dialogProgress" class="bottom">
+            <progress></progress>
+        </dialog>
+
+        <dialog id="dialogError" class="bottom">
+            <span class="tertiary-text"><h5>Error</h5></span>
+            <div id="divErrorMessage">Unknown Error</div>
+            <nav class="right-align">
+                <button id="dismissError" data-ui="#dialogError" class="large tertiary">Understood</button>
+            </nav>
+        </dialog>
+
+        <script>
+            document.getElementById('dismissError').addEventListener('click', function() {
+                const progress = document.getElementById('dialogProgress');
+                progress.close();
+            });
+        </script>
+    </body>
+</html>
