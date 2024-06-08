@@ -98,17 +98,17 @@ def login():
 @app.route('/client')
 @token_required
 def client():
-    return send_file('/app/frontend/client.html')
+    return send_from_directory('/app/frontend/client.html')
 
 @app.route('/client/current')
 @token_required
 def client():
-    return send_file('/app/frontend/current.html')
+    return send_from_directory('/app/frontend/current.html')
 
 @app.route('/client/archive')
 @token_required
 def client():
-    return send_file('/app/frontend/archive.html')
+    return send_from_directory('/app/frontend/archive.html')
 
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
 @token_required
