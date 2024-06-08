@@ -31,8 +31,9 @@ def init_db():
             id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
             cost INT CHECK (cost >= 0 AND cost <= 10000000),
+            month INT CHECK (month >= 1 AND month <= 12),
             approved BOOLEAN DEFAULT FALSE,
-            month INT CHECK (month >= 1 AND month <= 12)
+            paid BOOLEAN DEFAULT FALSE
         );
         '''
 
@@ -98,6 +99,16 @@ def login():
 @token_required
 def client():
     return send_file('/app/frontend/client.html')
+
+@app.route('/client/current')
+@token_required
+def client():
+    return send_file('/app/frontend/current.html')
+
+@app.route('/client/archive')
+@token_required
+def client():
+    return send_file('/app/frontend/archive.html')
 
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
 @token_required
