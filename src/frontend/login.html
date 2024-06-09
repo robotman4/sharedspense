@@ -16,18 +16,21 @@
             <article class="no-padding round">
                 <img class="responsive small top-round" src="/img/beer-and-woman.svg">
                 <div class="padding">
-                    <h5>Welcome</h5>
-                    <div class="field label round border extra">
-                        <input id="username" type="text">
-                        <label>Username</label>
-                    </div>
-                    <div class="field label round border extra">
-                        <input id="password" type="password">
-                        <label>Password</label>
-                    </div>
-                    <nav>
-                        <button id="buttonLogin" class="responsive">Login</button>
-                    </nav>
+                    <form id="formLogin" onSubmit="return handleClick()">
+                        <h5>Welcome</h5>
+                        <div class="field label round border extra">
+                            <input id="username" type="text">
+                            <label>Username</label>
+                        </div>
+                        <div class="field label round border extra">
+                            <input id="password" type="password">
+                            <label>Password</label>
+                        </div>
+                        <nav>
+                            <button id="buttonLogin" class="responsive" type="submit">Login</button>
+                        </nav>
+                        <input type="submit" hidden>
+                    </form>
                 </div>
             </article>
         </div>
