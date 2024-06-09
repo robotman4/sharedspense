@@ -78,9 +78,12 @@ function showErrorDialog(message) {
     }
 }
 
-async function login(username, password) {
+async function login() {
     const progress = document.getElementById('dialogProgress');
     progress.showModal();
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
 
     try {
         const response = await fetch('/api/v1/login', {

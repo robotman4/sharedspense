@@ -1,8 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('buttonLogin').addEventListener('click', function() {
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        login(username, password);
+        login();
+    });
+
+    document.getElementById('formLogin').addEventListener('submit', function(event) {
+        event.preventDefault();
+        login();
     });
 
     document.getElementById('dismissError').addEventListener('click', function() {
