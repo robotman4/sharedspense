@@ -80,9 +80,6 @@ function showErrorDialog(message) {
 
 async function login(username, password) {
     const progress = document.getElementById('dialogProgress');
-    const errorDialog = document.getElementById('dialogError');
-    const errorMessage = document.getElementById('divErrorMessage');
-    
     progress.showModal();
 
     try {
@@ -100,13 +97,11 @@ async function login(username, password) {
         if (response.ok) {
             window.location.href = '/client';
         } else {
-            errorMessage.textContent = result.message || 'Unknown error';
-            showErrorDialog(errorMessage.textContent);
+            showErrorDialog(result.message || 'Unknown error');
         }
     } catch (error) {
         progress.close();
-        errorMessage.textContent = 'Network error';
-        showErrorDialog(errorMessage.textContent);
+        showErrorDialog('Failed to login due to network error');
     }
 }
 
@@ -124,10 +119,10 @@ async function logout() {
         if (response.ok) {
             window.location.href = '/login';
         } else {
-            alert(result.message || 'Unknown error');
+            showErrorDialog(result.message || 'Unknown error');
         }
     } catch (error) {
-        alert('Network error');
+        showErrorDialog('Failed to logout due to network error');
     }
 }
 
