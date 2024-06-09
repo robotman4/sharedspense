@@ -1,5 +1,5 @@
 async function fetchUnapprovedExpenses() {
-    const url = '/api/v1/expenses/unapproved';
+    const url = '/api/v1/expense/unapproved';
     const options = {
         method: 'GET',
         headers: {
@@ -12,12 +12,25 @@ async function fetchUnapprovedExpenses() {
         if (!response.ok) {
             console.error(`HTTP error! status: ${response.status}`);
             showErrorDialog('Failed to get a valid response from backend.');
+            return null;
         }
         const data = await response.json();
-        return data;
+        if (data && data.success) {
+            if (Array.isArray(data.expenses)) {
+                data.expenses.forEach(expense => {
+                    createExpenseItem(expense.id, expense.name, expense.cost);
+                });
+            } else {
+                showErrorDialog('Unexpected response format: expenses array is missing.');
+                return null;
+            }
+        } else {
+            showErrorDialog('Failed to fetch unapproved expenses: ' + (data.message || 'Unknown error.'));
+            return null;
+        }
     } catch (error) {
         console.error('Error fetching unapproved expenses:', error);
-        showErrorDialog(`Failed to fetch unapproved expenses. Please try again later.`);
+        showErrorDialog('Failed to fetch unapproved expenses. Please try again later.');
         return null;
     }
 }
@@ -126,17 +139,4 @@ async function logout() {
     } catch (error) {
         showErrorDialog('Failed to logout due to network error');
     }
-}
-
-function main() {
-    fetchUnapprovedExpenses()
-    .then(data => {
-        if (data && data.success) {
-            data.forEach(expense => {
-                createExpenseItem(expense.id, expense.name, expense.cost);
-            });
-        } else {
-            showErrorDialog('Failed to fetch unapproved expenses: ' + data.message);
-        }
-    });
 }
