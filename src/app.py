@@ -128,6 +128,10 @@ def login():
     else:
         return jsonify({'success': False, 'message': 'Invalid credentials'}), 403
 
+def logout():
+    session.pop('authenticated', None)
+    return jsonify({'success': True, 'message': 'Logged out successfully'}), 200
+
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
 @login_required
 def get_unapproved_expenses():
