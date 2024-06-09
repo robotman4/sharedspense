@@ -79,7 +79,7 @@ def login_required(f):
 
 @app.route('/', methods=['GET'])
 def index():
-    return redirect(url_for('login'))
+    return redirect(url_for('client_login'))
 
 @app.route('/img/<path:filename>', methods=['GET'])
 def serve_img(filename):
@@ -128,6 +128,7 @@ def login():
     else:
         return jsonify({'success': False, 'message': 'Invalid credentials'}), 403
 
+@app.route('/api/v1/logout', methods=['GET'])
 def logout():
     session.pop('authenticated', None)
     return jsonify({'success': True, 'message': 'Logged out successfully'}), 200

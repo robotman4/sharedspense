@@ -108,7 +108,7 @@ async function login(username, password) {
 async function logout() {
     try {
         const response = await fetch('/api/v1/logout', {
-            method: 'POST',
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             }
