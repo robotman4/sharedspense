@@ -78,6 +78,38 @@ function showErrorDialog(message) {
     }
 }
 
+async function login(username, password) {
+    const progress = document.getElementById('dialogProgress');
+    const errorDialog = document.getElementById('dialogError');
+    const errorMessage = document.getElementById('divErrorMessage');
+    
+    progress.showModal();
+
+    try {
+        const response = await fetch('/api/v1/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
+
+        const result = await response.json();
+        progress.close();
+
+        if (response.ok) {
+            window.location.href = '/client';
+        } else {
+            errorMessage.textContent = result.message || 'Unknown error';
+            showErrorDialog(errorMessage.textContent);
+        }
+    } catch (error) {
+        progress.close();
+        errorMessage.textContent = 'Network error';
+        showErrorDialog(errorMessage.textContent);
+    }
+}
+
 function main() {
     const token = 'your-bearer-token-here';
 

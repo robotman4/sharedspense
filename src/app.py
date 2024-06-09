@@ -8,27 +8,34 @@ app.secret_key = os.environ.get('APP_SECRET') # Needed for session management
 app.permanent_session_lifetime = timedelta(days=7) # Set session to be permanent for 7 days
 
 # Function to connect to the database
-def database_connect():
+def database_connect(retries=5, delay=2):
     try:
-        # Read database credentials from environment variables
         dbname = os.environ.get('DB_NAME')
         user = os.environ.get('DB_USER')
         password = os.environ.get('DB_PASSWORD')
         host = os.environ.get('DB_HOST')
         port = os.environ.get('DB_PORT')
-
-        # Connect to PostgreSQL database
-        conn = psycopg2.connect(
-            dbname=dbname,
-            user=user,
-            password=password,
-            host=host,
-            port=port
-        )
-        return conn
     except Exception as error:
-        print(f"Error while connecting to the database: {error}")
+        print(f"Error while fetching connection details for database: {error}")
         return None
+
+    for i in range(retries):
+        try:
+            conn = psycopg2.connect(
+                dbname=dbname,
+                user=user,
+                password=password,
+                host=host,
+                port=port
+            )
+            return conn
+        except Exception as error:
+            print(f"Error while connecting to the database: {error}")
+            if i < retries - 1:
+                print(f"Retrying in {delay} seconds...")
+                time.sleep(delay)
+            else:
+                return None
 
 def database_init():
     try:
@@ -65,59 +72,61 @@ def database_init():
 def login_required(f):
     def decorated_function(*args, **kwargs):
         if 'authenticated' not in session:
-            return redirect(url_for('login'))
+            return redirect(url_for('client_login'))
         return f(*args, **kwargs)
     decorated_function.__name__ = f.__name__
     return decorated_function
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return redirect(url_for('login'))
 
-@app.route('/img/<path:filename>')
+@app.route('/img/<path:filename>', methods=['GET'])
 def serve_img(filename):
     return send_from_directory('/app/frontend/img', filename)
 
-@app.route('/js/<path:filename>')
+@app.route('/js/<path:filename>', methods=['GET'])
 def serve_js(filename):
     return send_from_directory('/app/frontend/js', filename)
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        # Get credentials from the form
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        # Get expected credentials from environment variables
-        expected_username = os.environ.get('APP_USER')
-        expected_password = os.environ.get('APP_PASS')
-
-        # Check if the provided credentials match the expected credentials
-        if username == expected_username and password == expected_password:
-            session['authenticated'] = True
-            session.permanent = True # Mark the session as permanent
-            return redirect(url_for('client'))
-        else:
-            return jsonify({'success': False, 'message': 'Invalid credentials'}), 403
-
-    # Return login form or page here
-    return send_from_directory('/app/frontend', 'login.html')
-
-@app.route('/client')
+@app.route('/client', methods=['GET'])
 @login_required
 def client():
     return send_from_directory('/app/frontend', 'client.html')
 
-@app.route('/client/current')
+@app.route('/client/current', methods=['GET'])
 @login_required
 def client_current():
     return send_from_directory('/app/frontend', 'current.html')
 
-@app.route('/client/archive')
+@app.route('/client/archive', methods=['GET'])
 @login_required
 def client_archive():
     return send_from_directory('/app/frontend', 'archive.html')
+
+@app.route('/client/login', methods=['GET'])
+def client_login():
+    # Return login form or page here
+    return send_from_directory('/app/frontend', 'login.html')
+
+@app.route('/api/v1/login', methods=['POST'])
+def login():
+    # Get variables
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # Get expected credentials from environment variables
+    expected_username = os.environ.get('APP_USER')
+    expected_password = os.environ.get('APP_PASS')
+
+    # Check if the provided credentials match the expected credentials
+    if username == expected_username and password == expected_password:
+        session['authenticated'] = True
+        session.permanent = True # Mark the session as permanent
+        return jsonify({'success': True, 'message': 'Login was successfull'}), 200
+    else:
+        return jsonify({'success': False, 'message': 'Invalid credentials'}), 403
 
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
 @login_required

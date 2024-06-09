@@ -8,7 +8,7 @@
         <link href="https://cdn.jsdelivr.net/npm/beercss@3.5.6/dist/cdn/beer.min.css" rel="stylesheet">
         <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.5.6/dist/cdn/beer.min.js"></script>
         <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.0/dist/cdn/material-dynamic-colors.min.js"></script>
-        <script src="js/api.js"></script>
+        <script src="/js/api.js"></script>
     </head>
     <body class="dark">
         <div class="padding center-align">
@@ -17,15 +17,15 @@
                 <div class="padding">
                     <h5>Welcome</h5>
                     <div class="field label round border extra">
-                        <input type="text">
+                        <input id="username" type="text">
                         <label>Username</label>
                     </div>
                     <div class="field label round border extra">
-                        <input type="password">
+                        <input id="password" type="password">
                         <label>Password</label>
                     </div>
                     <nav>
-                        <button data-ui="#dialogProgress" class="responsive">Login</button>
+                        <button id="buttonLogin" class="responsive">Login</button>
                     </nav>
                 </div>
             </article>
@@ -44,6 +44,12 @@
         </dialog>
 
         <script>
+            document.getElementById('buttonLogin').addEventListener('click', function() {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                login(username, password);
+            });
+
             document.getElementById('dismissError').addEventListener('click', function() {
                 const progress = document.getElementById('dialogProgress');
                 progress.close();
