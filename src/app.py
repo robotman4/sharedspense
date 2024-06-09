@@ -1,10 +1,11 @@
 import os
 import psycopg2
 from flask import Flask, request, jsonify, redirect, url_for, session, send_from_directory
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('APP_SECRET') # Needed for session management
+app.permanent_session_lifetime = timedelta(days=7) # Set session to be permanent for 7 days
 
 # Function to connect to the database
 def database_connect():
@@ -60,17 +61,11 @@ def database_init():
         if conn:
             conn.close()
 
-# Function to verify bearer token
-def verify_token(token):
-    # Implement token verification logic
-    return True # Just a placeholder, replace with actual logic
-
 # Authentication decorator
-def token_required(f):
+def login_required(f):
     def decorated_function(*args, **kwargs):
-        token = request.headers.get('Authorization')
-        if not token or not verify_token(token):
-            return jsonify({'message': 'Token is missing or invalid!'}), 403
+        if 'authenticated' not in session:
+            return redirect(url_for('login'))
         return f(*args, **kwargs)
     decorated_function.__name__ = f.__name__
     return decorated_function
@@ -90,38 +85,42 @@ def serve_js(filename):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Implement your login logic here
-        token = request.form.get('token')
-        if verify_token(token):
+        # Get credentials from the form
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # Get expected credentials from environment variables
+        expected_username = os.environ.get('APP_USER')
+        expected_password = os.environ.get('APP_PASS')
+
+        # Check if the provided credentials match the expected credentials
+        if username == expected_username and password == expected_password:
             session['authenticated'] = True
+            session.permanent = True # Mark the session as permanent
             return redirect(url_for('client'))
         else:
-            return jsonify({'message': 'Invalid credentials'}), 403
+            return jsonify({'success': False, 'message': 'Invalid credentials'}), 403
+
     # Return login form or page here
-    return '''
-        <form method="post">
-            Token: <input type="text" name="token">
-            <input type="submit" value="Login">
-        </form>
-    '''
+    return send_from_directory('/app/frontend', 'login.html')
 
 @app.route('/client')
-@token_required
+@login_required
 def client():
     return send_from_directory('/app/frontend', 'client.html')
 
 @app.route('/client/current')
-@token_required
+@login_required
 def client_current():
     return send_from_directory('/app/frontend', 'current.html')
 
 @app.route('/client/archive')
-@token_required
+@login_required
 def client_archive():
     return send_from_directory('/app/frontend', 'archive.html')
 
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
-@token_required
+@login_required
 def get_unapproved_expenses():
     try:
         # Connect to the database
@@ -151,7 +150,7 @@ def get_unapproved_expenses():
         return jsonify({'success': False, 'message': f'Error fetching unapproved expenses: {error}'}), 500
 
 @app.route('/api/v1/expense/create', methods=['POST'])
-@token_required
+@login_required
 def create_expense():
     try:
         # Get variables
@@ -184,7 +183,7 @@ def create_expense():
         return jsonify({'success': False, 'message': f'Error adding record: {error}'}), 500
 
 @app.route('/api/v1/expense/update', methods=['PUT'])
-@token_required
+@login_required
 def update_expense():
     try:
         # Get variables
@@ -218,7 +217,7 @@ def update_expense():
         return jsonify({'message': f'Error updating record: {error}'}), 500
 
 @app.route('/api/v1/expense/delete', methods=['DELETE'])
-@token_required
+@login_required
 def delete_expense():
     try:
         # Get variables

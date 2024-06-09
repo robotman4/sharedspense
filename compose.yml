@@ -12,6 +12,8 @@ services:
     app:
         build: .
         environment:
+            APP_USER: admin
+            APP_PASS: dude123
             APP_SECRET: asupersecretstring
             DB_NAME: your_db_name
             DB_USER: your_db_user
