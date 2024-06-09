@@ -1,7 +1,6 @@
 import os
 import psycopg2
 from flask import Flask, request, jsonify, redirect, url_for, session, send_from_directory
-from psycopg2 import sql
 from datetime import datetime
 
 app = Flask(__name__)
@@ -109,17 +108,17 @@ def login():
 @app.route('/client')
 @token_required
 def client():
-    return send_from_directory('/app/frontend/client.html')
+    return send_from_directory('/app/frontend', 'client.html')
 
 @app.route('/client/current')
 @token_required
-def client():
-    return send_from_directory('/app/frontend/current.html')
+def client_current():
+    return send_from_directory('/app/frontend', 'current.html')
 
 @app.route('/client/archive')
 @token_required
-def client():
-    return send_from_directory('/app/frontend/archive.html')
+def client_archive():
+    return send_from_directory('/app/frontend', 'archive.html')
 
 @app.route('/api/v1/expense/unapproved', methods=['GET'])
 @token_required
@@ -204,7 +203,7 @@ def update_expense():
         cursor = conn.cursor()
 
         # Execute the query to update a record
-        query = "UPDATE expenses SET name = %s, cost = %s, month = %s, WHERE id = %s"
+        query = "UPDATE expenses SET name = %s, cost = %s, month = %s WHERE id = %s"
         cursor.execute(query, (name, cost, month, expense_id))
 
         # Commit the transaction
@@ -234,7 +233,7 @@ def delete_expense():
         # Create a cursor object
         cursor = conn.cursor()
 
-        # Execute the query to insert a record
+        # Execute the query to delete a record
         query = "DELETE FROM expenses WHERE id = %s"
         cursor.execute(query, (expense_id,))
 
@@ -245,9 +244,9 @@ def delete_expense():
         cursor.close()
         conn.close()
 
-        return jsonify({'sucess': True, 'message': 'Record deleted successfully'}), 200
+        return jsonify({'success': True, 'message': 'Record deleted successfully'}), 200
     except Exception as error:
-        return jsonify({'sucess': False, 'message': f'Error deleting  record: {error}'}), 500
+        return jsonify({'success': False, 'message': f'Error deleting record: {error}'}), 500
 
 if __name__ == '__main__':
     database_init() # Ensure the database is initialized
