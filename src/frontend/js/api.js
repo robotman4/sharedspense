@@ -117,7 +117,7 @@ async function logout() {
         const result = await response.json();
 
         if (response.ok) {
-            window.location.href = '/login';
+            window.location.href = '/client/login';
         } else {
             showErrorDialog(result.message || 'Unknown error');
         }
