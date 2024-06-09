@@ -1,9 +1,8 @@
-async function fetchUnapprovedExpenses(bearerToken) {
+async function fetchUnapprovedExpenses() {
     const url = '/api/v1/expenses/unapproved';
     const options = {
         method: 'GET',
         headers: {
-            'Authorization': `Bearer ${bearerToken}`,
             'Content-Type': 'application/json'
         }
     };
@@ -130,9 +129,7 @@ async function logout() {
 }
 
 function main() {
-    const token = 'your-bearer-token-here';
-
-    fetchUnapprovedExpenses(token)
+    fetchUnapprovedExpenses()
     .then(data => {
         if (data && data.success) {
             data.forEach(expense => {
