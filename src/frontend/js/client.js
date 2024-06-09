@@ -1,4 +1,4 @@
-document.getElementById('logoutLink').addEventListener('click', function(event) {
+document.getElementById('linkLogout').addEventListener('click', function(event){
     event.preventDefault();
     logout();
 });
