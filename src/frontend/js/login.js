@@ -1,8 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('buttonLogin').addEventListener('click', function() {
-        login();
-    });
-
     document.getElementById('formLogin').addEventListener('submit', function(event) {
         event.preventDefault();
         login();
