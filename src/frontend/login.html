@@ -9,6 +9,7 @@
         <script type="module" src="https://cdn.jsdelivr.net/npm/beercss@3.5.6/dist/cdn/beer.min.js"></script>
         <script type="module" src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.0/dist/cdn/material-dynamic-colors.min.js"></script>
         <script src="/js/api.js"></script>
+        <script src="/js/login.js"></script>
     </head>
     <body class="dark">
         <div class="padding center-align">
@@ -42,18 +43,5 @@
                 <button id="dismissError" data-ui="#dialogError" class="large tertiary">Understood</button>
             </nav>
         </dialog>
-
-        <script>
-            document.getElementById('buttonLogin').addEventListener('click', function() {
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                login(username, password);
-            });
-
-            document.getElementById('dismissError').addEventListener('click', function() {
-                const progress = document.getElementById('dialogProgress');
-                progress.close();
-            });
-        </script>
     </body>
 </html>

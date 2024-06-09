@@ -110,6 +110,27 @@ async function login(username, password) {
     }
 }
 
+async function logout() {
+    try {
+        const response = await fetch('/api/v1/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            window.location.href = '/login';
+        } else {
+            alert(result.message || 'Unknown error');
+        }
+    } catch (error) {
+        alert('Network error');
+    }
+}
+
 function main() {
     const token = 'your-bearer-token-here';
 
