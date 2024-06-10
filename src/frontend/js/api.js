@@ -32,6 +32,7 @@ async function fetchUnapprovedExpenses() {
                 showErrorDialog('Unexpected response format: expenses array is missing.');
                 return null;
             }
+            updateTotalCost();
         } else {
             showErrorDialog('Failed to fetch unapproved expenses: ' + (data.message || 'Unknown error.'));
             return null;
@@ -41,6 +42,31 @@ async function fetchUnapprovedExpenses() {
         showErrorDialog('Failed to fetch unapproved expenses. Please try again later.');
         return null;
     }
+}
+
+function updateTotalCost() {
+    // Get the total cost element
+    const totalElement = document.getElementById('headerTotalCost');
+
+    // Reset the initial cost which should be 0
+    var totalCost = 0;
+
+    // Find all cost buttons
+    const costButtons = document.querySelectorAll('.costButton');
+    if (costButtons.length == 0) {
+        totalElement.innerText = 0;
+    }
+    costButtons.forEach(button => {
+        // Get the button cost
+        const costValue = parseInt(button.innerText, 10);
+        if (!isNaN(costValue)) {
+            totalCost += costValue;
+        }
+        totalElement.innerText = totalCost;
+    });
+
+    const numberOfExpensesElement = document.getElementById('spanNumberOfExpenses');
+    numberOfExpensesElement.innerText = costButtons.length
 }
 
 function addExpense() {
@@ -65,11 +91,9 @@ function addExpense() {
         if (data.success) {
             nameInput.value = '';
             costInput.value = '';
-            console.log('Expense created successfully:', data.message);
             progress.close();
             fetchUnapprovedExpenses();
         } else {
-            console.error('Error creating expense:', data.message);
             progress.close();
             showErrorDialog(`Error creating expense:' ${data.message}`);
         }
@@ -95,7 +119,6 @@ function deleteExpense(expenseId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log('Expense deleted successfully:', data.message);
             progress.close();
             fetchUnapprovedExpenses();
         } else {
@@ -128,7 +151,6 @@ function updateExpense(expenseId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            console.log('Expense updated successfully:', data.message);
             progress.close();
             fetchUnapprovedExpenses();
         } else {
@@ -193,9 +215,9 @@ function drawExpenseItem(id, name, cost) {
 
 function popuplateEditDialog(expenseId) {
     // Get values
-    const nameInput = document.getElementById("editName");
-    const costInput = document.getElementById("editCost");
-    const deleteButton = document.getElementById("buttonDeleteExpense");
+    const nameInput = document.getElementById('editName');
+    const costInput = document.getElementById('editCost');
+    const deleteButton = document.getElementById('buttonDeleteExpense');
 
     // Set values
     nameInput.value = document.querySelector(`.nameButton[data-expense-id="${expenseId}"]`).textContent;
