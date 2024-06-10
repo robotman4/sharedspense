@@ -84,25 +84,27 @@
 
         <dialog id="dialogAddExpense" class="bottom">
             <h5>Add expense</h5>
-            <div class="field label border round extra">
-                <input type="text">
-                <label>Name</label>
-            </div>
-            <div class="field label border round extra">
-                <input type="text">
-                <label>Cost</label>
-            </div>
-            <nav class="no-space">
-            </nav>
-            <nav class="no-space">
-                <button data-ui="#dialogAddExpense" class="large border absolute left">
-                    <i>Close</i>
-                    <span>Close</span>
-                </button>
-                <button class="large absolute right">
-                    <i>Add</i>
-                    <span>Add</span>
-                </button>
+            <form id="formAddExpense">
+                <div class="field label border round extra">
+                    <input id="addName" type="text">
+                    <label>Name</label>
+                </div>
+                <div class="field label border round extra">
+                    <input id="addCost" type="text">
+                    <label>Cost</label>
+                </div>
+                <nav class="no-space">
+                </nav>
+                <nav class="no-space">
+                    <button id="buttonCancelAddExpense" data-ui="#dialogAddExpense" class="large border absolute left">
+                        <i>Close</i>
+                        <span>Close</span>
+                    </button>
+                    <button id="buttonAddExpense" type="submit" class="large absolute right">
+                        <i>Add</i>
+                        <span>Add</span>
+                    </button>
+            </form>
             </nav>
             <nav class="no-space">
             </nav>
@@ -153,11 +155,15 @@
             </nav>
         </dialog>
 
+        <dialog id="dialogProgress" class="bottom">
+            <progress></progress>
+        </dialog>
+
         <dialog id="dialogError" class="bottom">
             <span class="tertiary-text"><h5>Error</h5></span>
             <div id="divErrorMessage">Unknown Error</div>
             <nav class="right-align">
-                <button data-ui="#dialogError" class="large tertiary">Understood</button>
+                <button id="dismissError" data-ui="#dialogError" class="large tertiary">Understood</button>
             </nav>
         </dialog>
 
