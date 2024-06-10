@@ -16,9 +16,11 @@ async function fetchUnapprovedExpenses() {
         }
         const data = await response.json();
         if (data && data.success) {
+            var expenseList = document.getElementById('list');
+            expenseList.innerHTML = '';
             if (Array.isArray(data.expenses)) {
                 data.expenses.forEach(expense => {
-                    createExpenseItem(expense.id, expense.name, expense.cost);
+                    drawExpenseItem(expense.id, expense.name, expense.cost);
                 });
             } else {
                 showErrorDialog('Unexpected response format: expenses array is missing.');
@@ -35,7 +37,45 @@ async function fetchUnapprovedExpenses() {
     }
 }
 
-function createExpenseItem(id, name, cost) {
+function postAddExpense() {
+    const progress = document.getElementById('dialogProgress');
+    progress.showModal();
+
+    const nameInput = document.getElementById('addName');
+    const costInput = document.getElementById('addCost');
+
+    const name = nameInput.value;
+    const cost = costInput.value;
+
+    fetch('/api/v1/expense/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, cost})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            nameInput.value = '';
+            costInput.value = '';
+            console.log('Expense created successfully:', data.message);
+            progress.close();
+            fetchUnapprovedExpenses();
+        } else {
+            console.error('Error creating expense:', data.message);
+            progress.close();
+            showErrorDialog(`Error creating expense:' ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('An error occurred during expense creation:', error);
+        progress.close();
+        showErrorDialog('An error occurred during expense creation.');
+    });
+}
+
+function drawExpenseItem(id, name, cost) {
     // Create the main div with class 's12'
     var div = document.createElement('div');
     div.className = 's12';

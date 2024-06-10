@@ -3,6 +3,13 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         logout();
     });
+
+    document.getElementById('buttonAddExpense').addEventListener('click', function(event) {
+        event.preventDefault();
+        postAddExpense();
+    });
 });
+
+fetchUnapprovedExpenses();
 
 // TODO: make buttons highlighted dynamically based on selection

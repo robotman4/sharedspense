@@ -50,32 +50,12 @@
             <div id="list" class="grid">
                 <div class="s12">
                     <nav class="no-space">
-                        <button class="border left-round max extra">
-                            <span>Name of expense</span>
-                        </button>
-                        <button class="border no-round extra">
-                            <span>5000</span>
-                        </button>
-                        <button data-ui="#dialogEditExpense" class="border right-round extra">
-                            <i class="small">Edit</i>
-                        </button>
-                    </nav>
-                </div>
-                <div class="s12">
-                    <nav class="no-space">
-                        <button class="border left-round max extra">
-                            <span>Company X</span>
-                        </button>
-                        <button class="border no-round extra">
-                            <span>5000</span>
-                        </button>
-                        <button data-ui="#dialogEditExpense" class="border right-round extra">
-                            <i class="small">Edit</i>
+                        <button class="border round max extra">
+                            <span>Nothing found!</span>
                         </button>
                     </nav>
                 </div>
             </div>
-
             <nav class="no-space">
                 <button data-ui="#dialogAddExpense" class="responsive">Add expense</button>
             </nav>
@@ -84,27 +64,25 @@
 
         <dialog id="dialogAddExpense" class="bottom">
             <h5>Add expense</h5>
-            <form id="formAddExpense">
-                <div class="field label border round extra">
-                    <input id="addName" type="text">
-                    <label>Name</label>
-                </div>
-                <div class="field label border round extra">
-                    <input id="addCost" type="text">
-                    <label>Cost</label>
-                </div>
-                <nav class="no-space">
-                </nav>
-                <nav class="no-space">
-                    <button id="buttonCancelAddExpense" data-ui="#dialogAddExpense" class="large border absolute left">
-                        <i>Close</i>
-                        <span>Close</span>
-                    </button>
-                    <button id="buttonAddExpense" type="submit" class="large absolute right">
-                        <i>Add</i>
-                        <span>Add</span>
-                    </button>
-            </form>
+            <div class="field label border round extra">
+                <input id="addName" type="text">
+                <label>Name</label>
+            </div>
+            <div class="field label border round extra">
+                <input id="addCost" type="text">
+                <label>Cost</label>
+            </div>
+            <nav class="no-space">
+            </nav>
+            <nav class="no-space">
+                <button id="buttonCancelExpense" data-ui="#dialogAddExpense" class="large border absolute left">
+                    <i>Close</i>
+                    <span>Close</span>
+                </button>
+                <button id="buttonAddExpense" data-ui="#dialogAddExpense" class="large absolute right">
+                    <i>Add</i>
+                    <span>Add</span>
+                </button>
             </nav>
             <nav class="no-space">
             </nav>
