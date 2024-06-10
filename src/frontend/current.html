@@ -96,7 +96,7 @@
                     <h5>Edit expense</h5>
                 </div>
                 <div class="s6 absolute right">
-                    <button class="border round tertiary-border tertiary">
+                    <button id="buttonDeleteExpense" data-expense-id="X" data-ui="#dialogEditExpense" class="border round tertiary-border tertiary">
                         <i class="large">Delete</i>
                     </button>
                 </div>
@@ -108,23 +108,23 @@
             <nav class="no-space">
             </nav>
             <div class="field label border round extra">
-                <input type="text">
+                <input id="editName" type="text">
                 <label>Name</label>
             </div>
             <div class="field label border round extra">
-                <input type="text">
+                <input id="editCost" type="text">
                 <label>Cost</label>
             </div>
             <nav class="no-space">
             </nav>
             <nav class="no-space">
-                <button data-ui="#dialogEditExpense" class="large border absolute left">
+                <button id="buttonCloseEdit" data-ui="#dialogEditExpense" class="large border absolute left">
                     <i>Close</i>
                     <span>Close</span>
                 </button>
-                <button class="large absolute right">
-                    <i>Add</i>
-                    <span>Add</span>
+                <button id="buttonSaveEdit" class="large absolute right">
+                    <i>Save</i>
+                    <span>Save</span>
                 </button>
             </nav>
             <nav class="no-space">

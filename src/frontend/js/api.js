@@ -22,6 +22,12 @@ async function fetchUnapprovedExpenses() {
                 data.expenses.forEach(expense => {
                     drawExpenseItem(expense.id, expense.name, expense.cost);
                 });
+                document.querySelectorAll('.editbutton').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const expenseId = this.dataset.expenseId;
+                        popuplateEditDialog(expenseId);
+                    });
+                });
             } else {
                 showErrorDialog('Unexpected response format: expenses array is missing.');
                 return null;
@@ -130,7 +136,8 @@ function drawExpenseItem(id, name, cost) {
 
     // Create the third button element
     var editButton = document.createElement('button');
-    editButton.className = 'border right-round extra';
+    editButton.setAttribute('data-expense-id', id);
+    editButton.className = 'border right-round extra editbutton';
     editButton.setAttribute('data-ui', '#dialogEditExpense');
     var icon = document.createElement('i');
     icon.className = 'small';
@@ -147,6 +154,16 @@ function drawExpenseItem(id, name, cost) {
 
     // Append the main div to the div with ID 'list'
     document.getElementById('list').appendChild(div);
+}
+
+function popuplateEditDialog(expenseId) {
+    const nameInput = document.getElementById("editName");
+    const costInput = document.getElementById("editCost");
+    const deleteButton = document.getElementById("buttonDeleteExpense");
+
+    nameInput.value = 'AAA';
+    costInput.value = '300';
+    deleteButton.setAttribute('data-expense-id', expenseId);
 }
 
 function showErrorDialog(message) {

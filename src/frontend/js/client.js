@@ -8,8 +8,15 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         addExpense();
     });
+
+    document.getElementById('buttonDeleteExpense').addEventListener('click', function(event) {
+        event.preventDefault();
+        const expenseId = this.dataset.expenseId;
+        deleteExpense(expenseId);
+    });
 });
 
+//TODO: run only for current view
 fetchUnapprovedExpenses();
 
 // TODO: make buttons highlighted dynamically based on selection
