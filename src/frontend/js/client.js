@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('buttonAddExpense').addEventListener('click', function(event) {
         event.preventDefault();
-        postAddExpense();
+        addExpense();
     });
 });
 

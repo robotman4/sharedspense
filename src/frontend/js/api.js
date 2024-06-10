@@ -37,7 +37,7 @@ async function fetchUnapprovedExpenses() {
     }
 }
 
-function postAddExpense() {
+function addExpense() {
     const progress = document.getElementById('dialogProgress');
     progress.showModal();
 
@@ -72,6 +72,36 @@ function postAddExpense() {
         console.error('An error occurred during expense creation:', error);
         progress.close();
         showErrorDialog('An error occurred during expense creation.');
+    });
+}
+
+function deleteExpense(expenseId) {
+    const progress = document.getElementById('dialogProgress');
+    progress.showModal();
+
+    fetch(`/api/v1/expense/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: expenseId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Expense deleted successfully:', data.message);
+            progress.close();
+            fetchUnapprovedExpenses();
+        } else {
+            console.error('Error deleting expense:', data.message);
+            progress.close();
+            showErrorDialog(`Error deleting expense: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('An error occurred during expense deletion:', error);
+        progress.close();
+        showErrorDialog('An error occurred during expense deletion.');
     });
 }
 
