@@ -226,9 +226,9 @@ def update_expense():
         cursor.close()
         conn.close()
 
-        return jsonify({'message': 'Record updated successfully'}), 200
+        return jsonify({'success': True, 'message': 'Record updated successfully'}), 200
     except Exception as error:
-        return jsonify({'message': f'Error updating record: {error}'}), 500
+        return jsonify({'success': False, 'message': f'Error updating record: {error}'}), 500
 
 @app.route('/api/v1/expense/delete', methods=['DELETE'])
 @login_required

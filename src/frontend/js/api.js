@@ -111,6 +111,39 @@ function deleteExpense(expenseId) {
     });
 }
 
+function updateExpense(expenseId) {
+    const progress = document.getElementById('dialogProgress');
+    progress.showModal();
+
+    const name = document.getElementById('editName').value;
+    const cost = document.getElementById('editCost').value;
+
+    fetch('/api/v1/expense/update', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: expenseId, name, cost })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Expense updated successfully:', data.message);
+            progress.close();
+            fetchUnapprovedExpenses();
+        } else {
+            console.error('Error updating expense:', data.message);
+            progress.close();
+            showErrorDialog(`Error updating expense: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('An error occurred during expense update:', error);
+        progress.close();
+        showErrorDialog('An error occurred during expense update.');
+    });
+}
+
 function drawExpenseItem(id, name, cost) {
     // Create the main div with class 's12'
     var div = document.createElement('div');
@@ -159,13 +192,20 @@ function drawExpenseItem(id, name, cost) {
 }
 
 function popuplateEditDialog(expenseId) {
+    // Get values
     const nameInput = document.getElementById("editName");
     const costInput = document.getElementById("editCost");
     const deleteButton = document.getElementById("buttonDeleteExpense");
 
+    // Set values
     nameInput.value = document.querySelector(`.nameButton[data-expense-id="${expenseId}"]`).textContent;
-    costInput.value = document.querySelector(`.nameButton[data-expense-id="${expenseId}"]`).textContent;
+    costInput.value = document.querySelector(`.costButton[data-expense-id="${expenseId}"]`).textContent;
     deleteButton.setAttribute('data-expense-id', expenseId);
+
+    document.getElementById('buttonSaveEdit').addEventListener('click', function(event) {
+        event.preventDefault();
+        updateExpense(expenseId);
+    });
 }
 
 function showErrorDialog(message) {
