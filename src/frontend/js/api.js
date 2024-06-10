@@ -122,14 +122,16 @@ function drawExpenseItem(id, name, cost) {
 
     // Create the first button element
     var nameButton = document.createElement('button');
-    nameButton.className = 'border left-round max extra';
+    nameButton.setAttribute('data-expense-id', id);
+    nameButton.className = 'border left-round max extra namebutton';
     var nameText = document.createElement('span');
     nameText.textContent = name;
     nameButton.appendChild(nameText);
 
     // Create the second button element
     var costButton = document.createElement('button');
-    costButton.className = 'border no-round extra';
+    costButton.setAttribute('data-expense-id', id);
+    costButton.className = 'border no-round extra costbutton';
     var costAmount = document.createElement('span');
     costAmount.textContent = cost;
     costButton.appendChild(costAmount);
@@ -161,8 +163,8 @@ function popuplateEditDialog(expenseId) {
     const costInput = document.getElementById("editCost");
     const deleteButton = document.getElementById("buttonDeleteExpense");
 
-    nameInput.value = 'AAA';
-    costInput.value = '300';
+    nameInput.value = document.querySelector(`.nameButton[data-expense-id="${expenseId}"]`).textContent;
+    costInput.value = document.querySelector(`.nameButton[data-expense-id="${expenseId}"]`).textContent;
     deleteButton.setAttribute('data-expense-id', expenseId);
 }
 
