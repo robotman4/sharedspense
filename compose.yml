@@ -1,6 +1,7 @@
 services:
     db:
         image: postgres:latest
+        restart: always
         environment:
             POSTGRES_DB: your_db_name
             POSTGRES_USER: your_db_user
@@ -11,6 +12,7 @@ services:
             - ./volumes/postgre/data:/var/lib/postgresql/data
     app:
         image: felipdocker/sharedspence:alpha
+        restart: always
         environment:
             APP_USER: admin
             APP_PASS: dude123
