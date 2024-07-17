@@ -166,6 +166,36 @@ function updateExpense(expenseId) {
     });
 }
 
+function archiveExpenses(month) {
+    const progress = document.getElementById('dialogProgress');
+    progress.showModal();
+    console.log(month);
+
+    fetch('/api/v1/expense/archive', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ month: month })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            progress.close();
+            fetchUnapprovedExpenses();
+        } else {
+            console.error('Error archiving expenses:', data.message);
+            progress.close();
+            showErrorDialog(`Error archiving expense: ${data.message}`);
+        }
+    })
+    .catch(error => {
+        console.error('An error occurred during expense update:', error);
+        progress.close();
+        showErrorDialog('An error occurred during expense update.');
+    });
+}
+
 function drawExpenseItem(id, name, cost) {
     // Create the main div with class 's12'
     var div = document.createElement('div');

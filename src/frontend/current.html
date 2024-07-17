@@ -13,7 +13,7 @@
     </head>
     <body class="dark">
 
-        <nav class="s bottom">
+        <nav class="s m l bottom">
             <a id="linkMenuHome" class="menulink" href="/client">
                 <i>Home</i>
                 <div>Home</div>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <nav>
-                    <button>Approve</button>
+                    <button data-ui="#dialogArchiveExpenses">Approve</button>
                 </nav>
             </article>
 
@@ -120,6 +120,54 @@
                     <span>Close</span>
                 </button>
                 <button id="buttonSaveEdit" data-ui="#dialogEditExpense" class="large absolute right">
+                    <i>Save</i>
+                    <span>Save</span>
+                </button>
+            </nav>
+            <nav class="no-space">
+                <br>
+            </nav>
+        </dialog>
+
+        <dialog id="dialogArchiveExpenses" class="bottom">
+            <div class="grid no-space">
+                <div class="s6 absolute left">
+                    <h5>Archive expense</h5>
+                </div>
+            </div>
+            <nav class="no-space">
+                <br>
+            </nav>
+            <div class="field label suffix round large border">
+                <select id="archiveMonthOptions"> 
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+                <label>For which month are these expenses?</label>
+                <i>arrow_drop_down</i>
+            </div>
+            <div class="field label border round large">
+                <input id="archiveYear" type="number" value="1970">
+                <label>For what year</label>
+            </div>
+            <nav class="no-space">
+            </nav>
+            <nav class="no-space">
+                <button id="buttonCloseArchive" data-ui="#dialogArchiveExpenses" class="large border absolute left">
+                    <i>Close</i>
+                    <span>Close</span>
+                </button>
+                <button id="buttonSaveArchive" data-ui="#dialogArchiveExpenses" class="large absolute right">
                     <i>Save</i>
                     <span>Save</span>
                 </button>

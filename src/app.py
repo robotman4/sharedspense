@@ -50,6 +50,7 @@ def database_init():
             name VARCHAR(255) NOT NULL,
             cost INT CHECK (cost >= 0 AND cost <= 10000000),
             month INT CHECK (month >= 1 AND month <= 12),
+            year INT CHECK (year >=1970 AND year <=2999),
             approved BOOLEAN DEFAULT FALSE,
             paid BOOLEAN DEFAULT FALSE
         );
@@ -62,6 +63,41 @@ def database_init():
 
     except Exception as error:
         print(f"Error while creating PostgreSQL table: {error}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+def database_migrate(columns):
+    try:
+        conn = database_connect()
+        cursor = conn.cursor()
+
+        for column, column_type in columns.items():
+            # Check if the column already exists
+            check_column_query = '''
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name='expenses' AND column_name=%s;
+            '''
+            cursor.execute(check_column_query, (column,))
+            result = cursor.fetchone()
+
+            # If the column does not exist, add it
+            if not result:
+                alter_table_query = f'''
+                ALTER TABLE expenses
+                ADD COLUMN {column} {column_type};
+                '''
+                cursor.execute(alter_table_query)
+                conn.commit()
+                print(f"Column '{column}' added to table 'expenses'.")
+            else:
+                print(f"Column '{column}' already exists in table 'expenses'.")
+
+    except Exception as error:
+        print(f"Error while altering PostgreSQL table: {error}")
     finally:
         if cursor:
             cursor.close()
@@ -146,7 +182,7 @@ def get_unapproved_expenses():
         cursor = conn.cursor()
 
         # Execute the query to fetch unapproved expenses
-        query = "SELECT * FROM expenses WHERE approved = false ORDER BY id"
+        query = "SELECT id, name, cost, month, year, approved, paid FROM expenses WHERE approved = false ORDER BY id"
         cursor.execute(query)
 
         # Fetch all rows
@@ -157,7 +193,7 @@ def get_unapproved_expenses():
         conn.close()
 
         # Convert rows to list of dictionaries for JSON response
-        expenses = [{'id': row[0], 'name': row[1], 'cost': row[2], 'approved': row[3], 'month': row[4]} for row in rows]
+        expenses = [{'id': row[0], 'name': row[1], 'cost': row[2], 'month': row[3], 'year': row[4], 'approved': row[5], 'paid': row[6]} for row in rows]
 
         return jsonify({'success': True, 'message': 'Here is the list of unapproved expenses.', 'expenses': expenses}), 200
     except Exception as error:
@@ -172,6 +208,7 @@ def create_expense():
         name = data.get('name')
         cost = data.get('cost')
         month = datetime.now().month
+        year = datetime.now().year
 
         # Connect to the database
         conn = database_connect()
@@ -182,8 +219,8 @@ def create_expense():
         cursor = conn.cursor()
 
         # Execute the query to insert a record
-        query = "INSERT INTO expenses (name, cost, month) VALUES (%s, %s, %s)"
-        cursor.execute(query, (name, cost, month))
+        query = "INSERT INTO expenses (name, cost, month, year) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (name, cost, month, year))
 
         # Commit the transaction
         conn.commit()
@@ -206,6 +243,7 @@ def update_expense():
         name = data.get('name')
         cost = data.get('cost')
         month = datetime.now().month
+        year = datetime.now().year
 
         # Connect to the database
         conn = database_connect()
@@ -261,6 +299,73 @@ def delete_expense():
     except Exception as error:
         return jsonify({'success': False, 'message': f'Error deleting record: {error}'}), 500
 
+@app.route('/api/v1/expense/archive', methods=['POST'])
+@login_required
+def archive_expense():
+    try:
+        # Get variables
+        data = request.json
+        expense_id = data.get('id')
+        month = data.get('month')
+        year = data.get('year')
+
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to insert a record
+        query = "UPDATE expenses SET approved = true, month = %s, year = %s WHERE approved = false"
+        cursor.execute(query, (month, year))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': True, 'message': 'Expenses now archived successfully'}), 200
+    except Exception as error:
+        return jsonify({'success': False, 'message': f'Error archiving expenses: {error}'}), 500
+
+@app.route('/api/v1/expense/approved', methods=['GET'])
+@login_required
+def get_approved_expenses():
+    try:
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to fetch unapproved expenses
+        query = "SELECT id, name, cost, month, year, approved, paid FROM expenses WHERE approved = false ORDER BY id"
+        cursor.execute(query)
+
+        # Fetch all rows
+        rows = cursor.fetchall()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        # Convert rows to list of dictionaries for JSON response
+        expenses = [{'id': row[0], 'name': row[1], 'cost': row[2], 'month': row[3], 'year': row[4], 'approved': row[5], 'paid': row[6]} for row in rows]
+
+        return jsonify({'success': True, 'message': 'Here is the list of unapproved expenses.', 'expenses': expenses}), 200
+    except Exception as error:
+        return jsonify({'success': False, 'message': f'Error fetching unapproved expenses: {error}'}), 500
+
 if __name__ == '__main__':
     database_init() # Ensure the database is initialized
+    columns_to_add = {
+        'year': 'INT'
+    }
+    database_migrate(columns_to_add)
     app.run(host='0.0.0.0', port=5000, debug=True)
