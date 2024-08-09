@@ -199,6 +199,36 @@ def get_unapproved_expenses():
     except Exception as error:
         return jsonify({'success': False, 'message': f'Error fetching unapproved expenses: {error}'}), 500
 
+@app.route('/api/v1/expense/approved', methods=['GET'])
+@login_required
+def get_approved_expenses():
+    try:
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to fetch approved expenses
+        query = "SELECT id, name, cost, month, year, approved, paid FROM expenses WHERE approved = true ORDER BY id"
+        cursor.execute(query)
+
+        # Fetch all rows
+        rows = cursor.fetchall()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        # Convert rows to list of dictionaries for JSON response
+        expenses = [{'id': row[0], 'name': row[1], 'cost': row[2], 'month': row[3], 'year': row[4], 'approved': row[5], 'paid': row[6]} for row in rows]
+
+        return jsonify({'success': True, 'message': 'Here is the list of approved expenses.', 'expenses': expenses}), 200
+    except Exception as error:
+        return jsonify({'success': False, 'message': f'Error fetching approved expenses: {error}'}), 500
+
 @app.route('/api/v1/expense/create', methods=['POST'])
 @login_required
 def create_expense():
@@ -299,13 +329,12 @@ def delete_expense():
     except Exception as error:
         return jsonify({'success': False, 'message': f'Error deleting record: {error}'}), 500
 
-@app.route('/api/v1/expense/archive', methods=['POST'])
+@app.route('/api/v1/expense/approve', methods=['POST'])
 @login_required
 def archive_expense():
     try:
         # Get variables
         data = request.json
-        expense_id = data.get('id')
         month = data.get('month')
         year = data.get('year')
 
@@ -332,9 +361,73 @@ def archive_expense():
     except Exception as error:
         return jsonify({'success': False, 'message': f'Error archiving expenses: {error}'}), 500
 
-@app.route('/api/v1/expense/approved', methods=['GET'])
+@app.route('/api/v1/expense/unapprove', methods=['POST'])
 @login_required
-def get_approved_expenses():
+def unarchive_expense():
+    try:
+        # Get variables
+        data = request.json
+        month = data.get('month')
+        year = data.get('year')
+
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to insert a record
+        query = "UPDATE expenses SET approved = false, paid = false WHERE month = %s AND year = %s"
+        cursor.execute(query, (month, year))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': True, 'message': 'Expenses now archived successfully'}), 200
+    except Exception as error:
+        return jsonify({'success': False, 'message': f'Error archiving expenses: {error}'}), 500
+
+@app.route('/api/v1/expense/paid', methods=['POST'])
+@login_required
+def set_paid_expense():
+    try:
+        # Get variables
+        data = request.json
+        month = data.get('month')
+        year = data.get('year')
+
+        # Connect to the database
+        conn = database_connect()
+        if conn is None:
+            return jsonify({'success': False, 'message': 'Failed to connect to the database'}), 500
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Execute the query to insert a record
+        query = "UPDATE expenses SET paid = true WHERE month = %s AND year = %s AND approved = true"
+        cursor.execute(query, (month, year))
+
+        # Commit the transaction
+        conn.commit()
+
+        # Close the cursor and connection
+        cursor.close()
+        conn.close()
+
+        return jsonify({'success': True, 'message': 'Expenses now archived successfully'}), 200
+    except Exception as error:
+        return jsonify({'success': False, 'message': f'Error archiving expenses: {error}'}), 500
+
+@app.route('/api/v1/expense/TEST', methods=['GET'])
+@login_required
+def TEST():
     try:
         # Connect to the database
         conn = database_connect()
@@ -344,23 +437,21 @@ def get_approved_expenses():
         # Create a cursor object
         cursor = conn.cursor()
 
-        # Execute the query to fetch unapproved expenses
-        query = "SELECT id, name, cost, month, year, approved, paid FROM expenses WHERE approved = false ORDER BY id"
+        # Execute the query to insert a record
+        query = "UPDATE expenses SET approved = false WHERE approved = true"
         cursor.execute(query)
 
-        # Fetch all rows
-        rows = cursor.fetchall()
+        # Commit the transaction
+        conn.commit()
 
         # Close the cursor and connection
         cursor.close()
         conn.close()
 
-        # Convert rows to list of dictionaries for JSON response
-        expenses = [{'id': row[0], 'name': row[1], 'cost': row[2], 'month': row[3], 'year': row[4], 'approved': row[5], 'paid': row[6]} for row in rows]
-
-        return jsonify({'success': True, 'message': 'Here is the list of unapproved expenses.', 'expenses': expenses}), 200
+        return jsonify({'success': True, 'message': 'test query success'}), 200
     except Exception as error:
-        return jsonify({'success': False, 'message': f'Error fetching unapproved expenses: {error}'}), 500
+        return jsonify({'success': False, 'message': f'test failed: {error}'}), 500
+
 
 if __name__ == '__main__':
     database_init() # Ensure the database is initialized

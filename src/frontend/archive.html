@@ -58,38 +58,15 @@
                 </menu>
             </div>
 
-            <nav class="no-space">
-                <button class="border left-round max extra">
-                    <span>April 2024</span>
-                </button>
-                <button class="border right-round extra">
-                    <span>5000</span>
-                </button>
-            </nav>
-            <nav class="no-space">
-                <button class="border left-round max extra">
-                    <span>March 2024</span>
-                </button>
-                <button class="border right-round extra">
-                    <span>5000</span>
-                </button>
-            </nav>
-            <nav class="no-space">
-                <button class="border left-round max extra">
-                    <span>February 2024</span>
-                </button>
-                <button class="border right-round extra">
-                    <span>5000</span>
-                </button>
-            </nav>
-            <nav class="no-space">
-                <button class="border left-round max extra">
-                    <span>January 2024</span>
-                </button>
-                <button class="border right-round extra">
-                    <span>5000</span>
-                </button>
-            </nav>
+            <div id="archiveList" class="grid">
+                <div class="s12">
+                    <nav class="no-space">
+                        <button class="border round max extra">
+                            <span>Nothing found!</span>
+                        </button>
+                    </nav>
+                </div>
+            </div>
 
         </main>
 
@@ -102,6 +79,40 @@
             <div id="divErrorMessage">Unknown Error</div>
             <nav class="right-align">
                 <button data-ui="#dialogError" class="large tertiary">Understood</button>
+            </nav>
+        </dialog>
+
+        <dialog id="dialogListArchive" class="bottom">
+            <div class="grid no-space">
+                <div class="s6 absolute left">
+                    <h5>Edit Approved</h5>
+                </div>
+                <div class="s6 absolute right">
+                    <button id="buttonRevertArchive" data-archive-id="X" data-ui="#dialogListArchive" class="border round tertiary-border tertiary">
+                        <i class="large">unarchive</i>
+                        <span>Revert</span>
+                    </button>
+                </div>
+            </div>
+            <nav class="no-space">
+                <br>
+            </nav>
+            <div id="list" class="grid">XXX</div>
+            <nav class="no-space">
+                <br>
+            </nav>
+            <nav class="no-space">
+                <button id="buttonCloseEdit" data-ui="#dialogListArchive" class="large border absolute left">
+                    <i>Close</i>
+                    <span>Close</span>
+                </button>
+                <button id="buttonMarkAsPaid" data-ui="#dialogListArchive" class="large absolute right">
+                    <i>verified</i>
+                    <span>Paid</span>
+                </button>
+            </nav>
+            <nav class="no-space">
+                <br>
             </nav>
         </dialog>
 
