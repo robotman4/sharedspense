@@ -115,7 +115,10 @@ def login_required(f):
 
 @app.route('/', methods=['GET'])
 def index():
-    return redirect(url_for('client_login'))
+    if 'authenticated' not in session:
+        return redirect(url_for('client_login'))
+    else:
+        return redirect(url_for('client'))
 
 @app.route('/img/<path:filename>', methods=['GET'])
 def serve_img(filename):
